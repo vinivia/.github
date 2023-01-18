@@ -1,0 +1,13 @@
+{
+    "name": "Build Pipeline Workflow",
+    "description": "Build Pipeline starter workflow.",
+    "iconName": "octicon tools",
+    "categories": [
+        "Go"
+    ],
+    "filePatterns": [
+        "package.json$",
+        "^Dockerfile",
+        ".*\\.md$"
+    ]
+}
