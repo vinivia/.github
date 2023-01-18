@@ -17,8 +17,8 @@ jobs:
     name: Promote container image to prod
     runs-on: ubuntu-latest
     env:
-      ACCOUNT_ID_DEV: "your-account-ID-from-dev" # TODO: update with the account ID of development environment
-      ACCOUNT_ID_PROD: "your-account-ID-from-prod" # TODO: update with the account ID of production environment
+      ACCOUNT_ID_DEV: 1 # TODO: update with the account ID of development environment
+      ACCOUNT_ID_PROD: 1 # TODO: update with the account ID of production environment
 
     steps:
 
