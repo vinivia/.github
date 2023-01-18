@@ -7,7 +7,6 @@ on:
 
 env:
   APPLICATION_ID: "" # TODO: update with your application ID
-  ACCOUNT_ID_DEV: 1 # TODO: update with the account ID of development environment  
   AWS_REGION: "" #TODO: update with aws region of development environment       
 
 jobs: 
@@ -73,7 +72,7 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
       with:
-        registries: ${{ env.ACCOUNT_ID_DEV }}
+        registries: ${{ secrets.AWS_DEV_ACCOUNT_ID }}
 
     - name: Extract version from package.json
       id: app_version
