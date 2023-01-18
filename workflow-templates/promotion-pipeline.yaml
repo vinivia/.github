@@ -28,7 +28,7 @@ jobs:
     - name: Setup variables
       id: setup-variables
       run: |
-        IMAGE_NAME: ${{ inputs.application_id }}
+        IMAGE_NAME=${{ inputs.application_id }}
         
         # By default the docker image and ECR repository will have the same name.If you want to use other pattern 
         # you need to change the setup of ECR_REPOSITORY or IMAGE_NAME variable.
