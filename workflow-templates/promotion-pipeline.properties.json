@@ -1,0 +1,13 @@
+{
+    "name": "Promotion Pipeline Workflow",
+    "description": "Promotion Pipeline starter workflow.",
+    "iconName": "octicon rocket",
+    "categories": [
+        "Go"
+    ],
+    "filePatterns": [
+        "package.json$",
+        "^Dockerfile",
+        ".*\\.md$"
+    ]
+}

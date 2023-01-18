@@ -1,0 +1,87 @@
+name: promotion-pipeline
+on:
+  workflow_dispatch:
+    inputs:
+      github_tag_name:
+        description: 'Github tag name'
+        required: true
+
+jobs: 
+
+  promotion:
+    name: Promote container image to prod
+    runs-on: ubuntu-latest
+    env:
+      ECR_REPOSITORY: "your-ecr-repository-name"
+      ACCOUNT_ID_DEV: "your-account-ID-from-dev"
+      ACCOUNT_ID_PROD: "your-account-ID-from-prod"
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: 'eu-central-1'
+
+    - name: Login to Amazon ECR (Dev environment)
+      id: login-ecr-dev
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registries: ${{ env.ACCOUNT_ID_DEV }}
+
+    - name: Extract container image deployed in Dev
+      id: load-tag
+      run: |
+        # Extract the container image from dev environment
+        DEV_OVERLAY_TAG=$(kustomize build deploy/overlays/dev | grep $ECR_REPOSITORY: | grep image: | awk -F ':' '{printf $3}')
+        
+        echo "IMAGE_TAG_DEV=$DEV_OVERLAY_TAG" >> $GITHUB_ENV 
+        echo "IMAGE_TAG_RELEASE=$DEV_OVERLAY_TAG-release" >> $GITHUB_ENV    
+    - name: Pull image from Amazon ECR (Dev environment)
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr-dev.outputs.registry }}
+      run: |
+        docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_DEV
+    - name: Login to Amazon ECR (Prod environment)
+      id: login-ecr-prod
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registries: ${{ env.ACCOUNT_ID_PROD }}   
+
+    - name: Add release tag to container image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
+      run: |
+        docker images
+        docker image tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_DEV $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_RELEASE     
+    - name: Push release image to Amazon ECR (Prod environment)
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
+      run: |
+        docker images
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_RELEASE    
+    - name: Update deployment descriptors with the promoted container version
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
+      run: |
+        cd deploy/overlays/prod
+        kustomize edit set image $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_RELEASE  
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ inputs.github_tag_name }}
+        release_name: Release ${{ inputs.github_tag_name }}
+        draft: false
+        prerelease: false           
+
+    - name: Create commit with promotion changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Git ops - Prod deploy  
