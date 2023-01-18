@@ -5,6 +5,11 @@ on:
       github_tag_name:
         description: 'Github tag name'
         required: true
+      application_id:
+        description: 'Application ID'
+        required: true
+      region:
+        required: true
 
 jobs: 
 
@@ -12,9 +17,10 @@ jobs:
     name: Promote container image to prod
     runs-on: ubuntu-latest
     env:
-      ECR_REPOSITORY: "your-ecr-repository-name" # TODO: update with the repository name. IMPORTANT: repository name and the image name should be the name
       ACCOUNT_ID_DEV: "your-account-ID-from-dev" # TODO: update with the account ID of development environment
       ACCOUNT_ID_PROD: "your-account-ID-from-prod" # TODO: update with the account ID of production environment
+      
+      ECR_REPOSITORY: ${{ inputs.application_id }}
 
     steps:
     - name: Check out code
@@ -25,7 +31,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: 'eu-central-1'
+        aws-region: ${{ inputs.region }}
 
     - name: Login to Amazon ECR (Dev environment)
       id: login-ecr-dev
