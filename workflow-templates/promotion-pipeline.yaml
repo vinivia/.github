@@ -12,9 +12,9 @@ jobs:
     name: Promote container image to prod
     runs-on: ubuntu-latest
     env:
-      ECR_REPOSITORY: "your-ecr-repository-name"
-      ACCOUNT_ID_DEV: "your-account-ID-from-dev"
-      ACCOUNT_ID_PROD: "your-account-ID-from-prod"
+      ECR_REPOSITORY: "your-ecr-repository-name" # TODO: update with the repository name. IMPORTANT: repository name and the image name should be the name
+      ACCOUNT_ID_DEV: "your-account-ID-from-dev" # TODO: update with the account ID of development environment
+      ACCOUNT_ID_PROD: "your-account-ID-from-prod" # TODO: update with the account ID of production environment
 
     steps:
     - name: Check out code
