@@ -28,8 +28,10 @@ jobs:
     - name: Setup variables
       id: setup-variables
       run: |
-
         ECR_REPOSITORY: ${{ inputs.application_id }}
+        
+        # By default the docker image name will be the same ECR name.If you want to use other pattern 
+        # you need to change the setup of IMAGE_NAME variable
         
         echo "ECR_REPOSITORY=$ECR_REPOSITORY" >> $GITHUB_ENV 
         echo "IMAGE_NAME=$ECR_REPOSITORY" >> $GITHUB_ENV         
