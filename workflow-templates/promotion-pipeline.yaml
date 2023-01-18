@@ -28,13 +28,14 @@ jobs:
     - name: Setup variables
       id: setup-variables
       run: |
-        ECR_REPOSITORY: ${{ inputs.application_id }}
+        IMAGE_NAME: ${{ inputs.application_id }}
         
-        # By default the docker image name will be the same ECR name.If you want to use other pattern 
-        # you need to change the setup of IMAGE_NAME variable
+        # By default the docker image and ECR repository will have the same name.If you want to use other pattern 
+        # you need to change the setup of ECR_REPOSITORY or IMAGE_NAME variable.
         
-        echo "ECR_REPOSITORY=$ECR_REPOSITORY" >> $GITHUB_ENV 
-        echo "IMAGE_NAME=$ECR_REPOSITORY" >> $GITHUB_ENV         
+        
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV   
+        echo "ECR_REPOSITORY=$IMAGE_NAME" >> $GITHUB_ENV       
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
