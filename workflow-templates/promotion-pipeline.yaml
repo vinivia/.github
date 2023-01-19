@@ -94,6 +94,7 @@ jobs:
       with:
         commit_message: Git ops - Prod deploy  
 
-    - uses: ncipollo/release-action@v1
+    - name: Create release
+      uses: ncipollo/release-action@v1
       with:
         tag: ${{ inputs.tag_name }}        
