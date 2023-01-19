@@ -54,12 +54,14 @@ jobs:
         DEV_OVERLAY_TAG=$(kustomize build deploy/overlays/dev | grep $IMAGE_NAME: | grep image: | awk -F ':' '{printf $3}')
         
         echo "IMAGE_TAG_DEV=$DEV_OVERLAY_TAG" >> $GITHUB_ENV 
-        echo "IMAGE_TAG_RELEASE=$DEV_OVERLAY_TAG-release" >> $GITHUB_ENV    
+        echo "IMAGE_TAG_RELEASE=$DEV_OVERLAY_TAG-release" >> $GITHUB_ENV   
+
     - name: Pull image from Amazon ECR (Dev environment)
       env:
         ECR_REGISTRY: ${{ steps.login-ecr-dev.outputs.registry }}
       run: |
         docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_DEV
+
     - name: Login to Amazon ECR (Prod environment)
       id: login-ecr-prod
       uses: aws-actions/amazon-ecr-login@v1
@@ -71,31 +73,27 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
       run: |
         docker images
-        docker image tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_DEV $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_RELEASE     
+        docker image tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_DEV $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_RELEASE 
+
     - name: Push release image to Amazon ECR (Prod environment)
       env:
         ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
       run: |
         docker images
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_RELEASE    
+
     - name: Update deployment descriptors with the promoted container version
       env:
         ECR_REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
       run: |
         cd deploy/overlays/prod
-        kustomize edit set image $IMAGE_NAME=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_RELEASE  
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@latest
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ inputs.github_tag_name }}
-        release_name: Release ${{ inputs.github_tag_name }}
-        draft: false
-        prerelease: false           
+        kustomize edit set image $IMAGE_NAME=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG_RELEASE       
 
     - name: Create commit with promotion changes
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: Git ops - Prod deploy  
+
+    - uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ inputs.tag_name }}        
