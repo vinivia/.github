@@ -1,0 +1,9 @@
+{
+    "name": "Quality Gate Workflow",
+    "description": "Quality Gate starter workflow.",
+    "iconName": "octicon bug",
+    "categories": [
+        "code-quality",
+        "code-review"
+    ]
+}
