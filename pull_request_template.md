@@ -22,12 +22,19 @@ missing to be done, please mention them here. In the below checklist, adding ext
 - [ ] Some missing thing
 
 ## Tested on:
-Write an "x" in the devices/viewports you have tested this PR on:
+Mark the devices/viewports you have tested this PR on as checked:
 
-- [ ] Android
-- [ ] IOS
-- [ ] Small Screen
-- [ ] Large Screen
+**Web**
+- [ ] Large screen (1980px x 1080px)
+- [ ] Medium screen (1280px x 720px)
+- [ ] Small screen (720px x 480px)
+- [ ] Mobile (375px)
+
+**Mobile**
+- [ ] Large screen (1980px x 1080px)
+- [ ] Medium screen (1280px x 720px)
+- [ ] Small screen (720px x 480px)
+- [ ] Mobile (375px)
 
 ## Media samples
 Here you can insert videos, images, gifs or anything that can facilitate the understand of your pull request
