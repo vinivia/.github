@@ -31,10 +31,10 @@ Mark the devices/viewports you have tested this PR on as checked:
 - [ ] Mobile (375px)
 
 **Mobile**
-- [ ] Large screen (1980px x 1080px)
-- [ ] Medium screen (1280px x 720px)
-- [ ] Small screen (720px x 480px)
-- [ ] Mobile (375px)
+- [ ] Android
+- [ ] IOS
+- [ ] Large screen
+- [ ] Small screen
 
 ## Media samples
 Here you can insert videos, images, gifs or anything that can facilitate the understand of your pull request
